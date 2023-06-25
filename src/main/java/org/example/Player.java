@@ -2,15 +2,18 @@ package org.example;
 
 import java.awt.event.*;
 
-public class Player implements KeyListener {
+public class Player extends Client implements KeyListener {
     private int heart;
     private int x;
     private int y;
     private CustomFrame f;
+    private long lastPressProcessedUP = 0;
+    private long lastPressProcessedDown = 0;
 
     public Player(int heart) {
         this.heart = heart;
     }
+
 
     public int getHeart() {
         return heart;
@@ -18,6 +21,7 @@ public class Player implements KeyListener {
 
     public void setHeart(int heart) {
         this.heart = heart;
+
     }
 
     public int getX() {
@@ -42,25 +46,34 @@ public class Player implements KeyListener {
 
     }
 
-
     @Override
     public void keyPressed(KeyEvent e) {
         System.out.println(y);
+
         switch (e.getKeyCode()) {
             case 38: //tasto freccia su
-                if (this.y > 100)
-                    this.y -= 5;
+
+                if (this.y > 120 && (System.currentTimeMillis() - lastPressProcessedUP) > 550) {
+                    this.y -= 80;
+                    f.repaint(this.getX(), this.getY(), 101, 180);
+                    lastPressProcessedUP = System.currentTimeMillis();
+                }
                 break;
 
             case 40: //tasto freccia giù
-                if (this.y < (this.f.getHeight() - 100))
-                    y += 5;
-                break;
+                if (this.y < (this.f.getHeight() - 140) && (System.currentTimeMillis() - lastPressProcessedDown) > 550) {
+                    y += 80;
+                    f.repaint(this.getX(), this.getY() - 80, 101, 180);
+                    lastPressProcessedDown = System.currentTimeMillis();
+                    break;
+                }
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+
+    }
 
     public void setF(CustomFrame f) {
         this.f = f;

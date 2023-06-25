@@ -14,8 +14,6 @@ public class Movimento extends Thread{
         this.f = f;
         this.out = out;
     }
-
-
     @Override
     public void run() {
         double thisPosizioneY = thisPlayer.getY();

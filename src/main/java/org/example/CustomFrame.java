@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class CustomFrame extends JFrame implements Runnable {
+public class CustomFrame extends JFrame{
     private Thread thread;
 
     Player leftPlayer;
@@ -18,9 +18,11 @@ public class CustomFrame extends JFrame implements Runnable {
 
 
     public CustomFrame(Player thisPlayer) throws HeadlessException {
+
         this.addKeyListener(thisPlayer);
-        this.thread = new Thread(this);
-        thread.start();
+
+        this.getContentPane().setBackground(Color.cyan);
+
     }
 
 
@@ -41,13 +43,8 @@ public class CustomFrame extends JFrame implements Runnable {
             return;
         }
 
-
-
         int w = this.getWidth();
         int h = this.getHeight();
-
-
-        backgroundDrawImage(g);
 
 
         for (int i = 1; i <= leftPlayer.getHeart(); i++) {
@@ -56,6 +53,10 @@ public class CustomFrame extends JFrame implements Runnable {
         for (int i = 1; i <= rightPlayer.getHeart(); i++) {
             heartDrawImage(g, (w - 50) - (60 * i));
         }
+
+        g.setColor(Color.yellow);
+        g.drawLine(0,87,this.getWidth(),87);
+        g.drawLine(0,88,this.getWidth(),88);
 
         rightTankImage(g);
         leftTankImage(g);
@@ -78,18 +79,6 @@ public class CustomFrame extends JFrame implements Runnable {
         g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
     }
 
-    private void backgroundDrawImage(Graphics g) {
-        ClassLoader cl = this.getClass().getClassLoader();
-        InputStream url = cl.getResourceAsStream("notebook.jpg");
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
-    }
 
     private void heartDrawImage(Graphics g, int x) {
         ClassLoader cl = this.getClass().getClassLoader();
@@ -101,7 +90,7 @@ public class CustomFrame extends JFrame implements Runnable {
             e.printStackTrace();
             return;
         }
-        g.drawImage(img, x, 50, this.getWidth() / 24, this.getHeight() / 16, null);
+        g.drawImage(img, x, 35, this.getWidth() / 24, this.getHeight() / 16, null);
     }
 
     private void rightTankImage(Graphics g) {
@@ -129,19 +118,6 @@ public class CustomFrame extends JFrame implements Runnable {
         }
         g.drawImage(img, leftPlayer.getX(), leftPlayer.getY(), 100, 100, null);
     }
-
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                Thread.sleep(100000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            //this.repaint();
-        }
-    }
-
 
 
 }
