@@ -9,8 +9,10 @@ public class Player extends Client implements KeyListener {
     private CustomFrame f;
     private long lastPressProcessedUP = 0;
     private long lastPressProcessedDown = 0;
+    private long lastPressProcessedSpace = 0;
 
-    public Player() {}
+    public Player() {
+    }
 
     public int getHeart() {
         return heart;
@@ -39,7 +41,8 @@ public class Player extends Client implements KeyListener {
 
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -64,13 +67,23 @@ public class Player extends Client implements KeyListener {
                     Client.sendPlayerData();
                     f.repaint(this.getX(), this.getY() - 80, 101, 180);
                     lastPressProcessedDown = System.currentTimeMillis();
-                    break;
                 }
+                break;
+
+            case 32:
+                if ((System.currentTimeMillis() - lastPressProcessedSpace) > 2000) {
+                    try {
+                        f.fire(this.x, this.y);
+                    } catch (Exception ex) {
+                    }
+                }
+                break;
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+    }
 
     public void setF(CustomFrame f) {
         this.f = f;

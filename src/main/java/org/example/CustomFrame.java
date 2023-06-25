@@ -9,14 +9,21 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class CustomFrame extends JFrame{
+public class CustomFrame extends JFrame implements Runnable {
     private Thread thread;
     Player leftPlayer;
     Player rightPlayer;
+    int bulletX1 = -10;
+    int bulletY1 = -10;
+    int bulletX2 = -10;
+    int bulletY2 = -10;
+
 
     public CustomFrame(Player thisPlayer) throws HeadlessException {
         this.addKeyListener(thisPlayer);
         this.getContentPane().setBackground(Color.cyan);
+        Thread th = new Thread(this);
+        th.start();
     }
 
     public void setLeftPlayer(Player leftPlayer) {
@@ -46,11 +53,14 @@ public class CustomFrame extends JFrame{
         }
 
         g.setColor(Color.yellow);
-        g.drawLine(0,87,this.getWidth(),87);
-        g.drawLine(0,88,this.getWidth(),88);
+        g.drawLine(0, 87, this.getWidth(), 87);
+        g.drawLine(0, 88, this.getWidth(), 88);
 
         rightTankImage(g);
         leftTankImage(g);
+
+        drawBullet(g);
+        drawBullet2(g);
     }
 
     private void blockDrawImage(Graphics g) {
@@ -105,5 +115,74 @@ public class CustomFrame extends JFrame{
             return;
         }
         g.drawImage(img, leftPlayer.getX(), leftPlayer.getY(), 100, 100, null);
+    }
+
+    private void drawBullet(Graphics g) {
+        ClassLoader cl = this.getClass().getClassLoader();
+        InputStream url = cl.getResourceAsStream("Bullet.png");
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        g.drawImage(img, bulletX1, bulletY1, 40, 40, null);
+    }
+
+    private void drawBullet2(Graphics g) {
+        ClassLoader cl = this.getClass().getClassLoader();
+        InputStream url = cl.getResourceAsStream("Bullet.png");
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        g.drawImage(img, bulletX2, bulletY2, 40, 40, null);
+    }
+
+    public void fire(int x, int y) {
+        if (bulletX1 < 0 && bulletY1 < 0) { //controlla se il proiettile1 è inattivo
+            bulletX1 = x;
+            bulletY1 = y;
+        } else {
+
+            bulletX2 = x;
+            bulletY2 = y;
+        }
+    }
+
+
+    @Override
+    public void run() {
+
+        while (true) {
+
+            if (bulletX1 > 0 && bulletY1 > 0) { //controlla se un qualunque proiettile sia dentro l'area di gioco se si allora lo sposta a destra
+                bulletX1-=40;
+                repaint(bulletX1,bulletY1,80,40);
+            }
+            if (bulletX2 > 0 && bulletY2 > 0) {
+                bulletX2-=40;
+                repaint(bulletX2,bulletY2,80,40);
+            }
+
+            if (bulletX1 > 1230) {
+                bulletX1= -10;
+                bulletY1= -10;
+            }
+            if (bulletX2 > 1230) {
+                bulletX2= -10;
+                bulletY2= -10;
+            }
+
+            try{
+                thread.sleep(500);
+            }catch (Exception e){
+
+            }
+        }
     }
 }

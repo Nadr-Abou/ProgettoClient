@@ -30,23 +30,23 @@ public class Client {
     static void clientMain() {
         String hostName = "127.0.0.1";
         int portNumber = 1234;
-        Socket echoSocket = null;
+        Socket clientSocket = null;
 
         try {
-            echoSocket = new Socket(hostName, portNumber);
+            clientSocket = new Socket(hostName, portNumber);
         } catch (IOException e) {
             System.out.println("cannot reach server " + e);
         }
 
         try {
-            assert echoSocket != null;
-            out = new PrintWriter(echoSocket.getOutputStream(), true);
+            assert clientSocket != null;
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
         } catch (Exception e) {
             System.out.println("YOU MUST CONNECT THE SERVER!!");
         }
 
         try {
-            in = new BufferedReader(new InputStreamReader(echoSocket.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (Exception e) {
             System.out.println("cannot allocate bufferedreader");
         }
@@ -54,15 +54,23 @@ public class Client {
         try {
             /*SPACCHETTAMENTO JSON NELLE COORDINATE*/
             String paramIniziali = in.readLine();
-            System.out.println(paramIniziali);
             thisP = g.fromJson(paramIniziali, P.class);
-            System.out.println(thisP);
+
             paramIniziali = in.readLine();
             otherP = g.fromJson(paramIniziali, P.class);
-            System.out.println(otherP);
+
         } catch (Exception e) {
             System.out.println("Si è verificato un errore per via del messaggio ricevuto oppure il server non è connesso");
         }
+
+        thisPlayer.setX(thisP.getX());
+        otherPlayer.setX(otherP.getX());
+
+        thisPlayer.setY(thisP.getY());
+        otherPlayer.setY(otherP.getY());
+
+        thisPlayer.setHeart(thisP.getNHeart());
+        otherPlayer.setHeart(otherP.getNHeart());
 
         //Coordinate dei giocatori prese dal server
         setCoordinatesFromP();
@@ -70,7 +78,6 @@ public class Client {
         thisPlayer.setF(f);
         otherPlayer.setF(f);
 
-        f.repaint();
 
         if (thisPlayer.getX() < 500) {
             f.setLeftPlayer(thisPlayer);
@@ -79,6 +86,8 @@ public class Client {
             f.setLeftPlayer(otherPlayer);
             f.setRightPlayer(thisPlayer);
         }
+
+        f.repaint();
 
         /*
         Movimento movements = new Movimento(thisPlayer, otherPlayer, f);
