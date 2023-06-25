@@ -86,7 +86,26 @@ public class Client {
         thread.start();
         */
 
-        while (true) {}
+        while (true) {
+            String s;
+            try {
+                if ((s = in.readLine()) != null) {
+                    if (s.equals("exit")) {
+                        break;
+                    }
+                    otherP = g.fromJson(s, P.class);
+
+                    otherPlayer.setY(otherP.getY());
+                    otherPlayer.setHeart(otherP.getNHeart());
+
+                    f.repaint();
+                    System.out.println(thisPlayer);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                break;
+            }
+        }
     }
 
     public static void setCoordinatesFromP() {
