@@ -14,8 +14,8 @@ public class App {
     static CustomFrame f = null;
 
     public static void main(String[] args) {
-        Player thisPlayer = new Player(3);
-        Player otherPlayer = new Player(3);
+        Player thisPlayer = new Player();
+        Player otherPlayer = new Player();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI(thisPlayer, otherPlayer);
@@ -23,11 +23,14 @@ public class App {
         });
         while (f == null) {
             System.out.println("aspettando");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                System.out.println("Interrupted exception");
+            }
         }
         new Client(thisPlayer, otherPlayer, f);
-
     }
-
 
     private static void createAndShowGUI(Player thisPlayer, Player otherPlayer) {
         f = new CustomFrame(thisPlayer);

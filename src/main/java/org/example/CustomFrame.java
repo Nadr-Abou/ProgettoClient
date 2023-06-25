@@ -11,20 +11,13 @@ import java.io.InputStream;
 
 public class CustomFrame extends JFrame{
     private Thread thread;
-
     Player leftPlayer;
     Player rightPlayer;
 
-
-
     public CustomFrame(Player thisPlayer) throws HeadlessException {
-
         this.addKeyListener(thisPlayer);
-
         this.getContentPane().setBackground(Color.cyan);
-
     }
-
 
     public void setLeftPlayer(Player leftPlayer) {
         this.leftPlayer = leftPlayer;
@@ -35,7 +28,6 @@ public class CustomFrame extends JFrame{
     }
 
     public void paint(Graphics g) {
-
         super.paint(g);
 
         if (leftPlayer == null || rightPlayer == null) {
@@ -45,7 +37,6 @@ public class CustomFrame extends JFrame{
 
         int w = this.getWidth();
         int h = this.getHeight();
-
 
         for (int i = 1; i <= leftPlayer.getHeart(); i++) {
             heartDrawImage(g, 60 * i);
@@ -60,11 +51,9 @@ public class CustomFrame extends JFrame{
 
         rightTankImage(g);
         leftTankImage(g);
-
     }
 
     private void blockDrawImage(Graphics g) {
-
         ClassLoader cl = this.getClass().getClassLoader();
         InputStream url = cl.getResourceAsStream("initialIMG.png");
         BufferedImage img = null;
@@ -78,7 +67,6 @@ public class CustomFrame extends JFrame{
 
         g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
     }
-
 
     private void heartDrawImage(Graphics g, int x) {
         ClassLoader cl = this.getClass().getClassLoader();
@@ -118,6 +106,4 @@ public class CustomFrame extends JFrame{
         }
         g.drawImage(img, leftPlayer.getX(), leftPlayer.getY(), 100, 100, null);
     }
-
-
 }
