@@ -1,5 +1,7 @@
 package org.example;
 
+import com.google.gson.Gson;
+
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +13,7 @@ public class App {
 
     static CustomFrame f = null;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Player thisPlayer = new Player(3);
         Player otherPlayer = new Player(3);
         SwingUtilities.invokeLater(new Runnable() {
@@ -21,9 +23,9 @@ public class App {
         });
         while (f == null) {
             System.out.println("aspettando");
+            Thread.sleep(1000);
         }
         clientMain(thisPlayer, otherPlayer, f);
-
     }
 
 
@@ -65,12 +67,20 @@ public class App {
 
         try {
             String paramIniziali = in.readLine();
+            System.out.println(paramIniziali);
+            Gson g = new Gson();
+            thisPlayer = g.fromJson(paramIniziali, Player.class);
+            System.out.println(thisPlayer);
+            paramIniziali = in.readLine();
+            otherPlayer = g.fromJson(paramIniziali, Player.class);
+            System.out.println(otherPlayer);
             /*SPACCHETTAMENTO JSON NELLE COORDINATE*/
-
+            //String thisPlayerJson = g.fromJson();
         } catch (Exception e) {
-            System.out.println("Connettere il server");
+            System.out.println("Si è verificato un errore per via del messaggio ricevuto oppure il server non è connesso");
         }
 
+        //Coordinate dei giocatori prese dal server
         thisPlayer.setY(250);
         thisPlayer.setX(0);
         otherPlayer.setY(500);

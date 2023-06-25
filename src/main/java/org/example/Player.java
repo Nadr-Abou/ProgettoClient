@@ -12,14 +12,12 @@ public class Player implements KeyListener {
         this.heart = heart;
     }
 
-
     public int getHeart() {
         return heart;
     }
 
     public void setHeart(int heart) {
         this.heart = heart;
-
     }
 
     public int getX() {
@@ -49,7 +47,6 @@ public class Player implements KeyListener {
     public void keyPressed(KeyEvent e) {
         System.out.println(y);
         switch (e.getKeyCode()) {
-
             case 38: //tasto freccia su
                 if (this.y > 100)
                     this.y -= 5;
@@ -59,14 +56,11 @@ public class Player implements KeyListener {
                 if (this.y < (this.f.getHeight() - 100))
                     y += 5;
                 break;
-
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
-
-    }
+    public void keyReleased(KeyEvent e) {}
 
     public void setF(CustomFrame f) {
         this.f = f;
