@@ -1,12 +1,32 @@
 package org.example;
 
 public class Bullet {
-    int x;
-    int y;
+    private int x;
+    private int y;
+    private int id;
+    private String s;
 
-    public Bullet(int x, int y) {
+    public Bullet(int x, int y, int id, String s) {
         this.x = x;
         this.y = y;
+        this.id = id;
+        this.s = s;
+    }
+
+    public String getS() {
+        return s;
+    }
+
+    public void setS(String string) {
+        this.s = string;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getX(){
@@ -24,4 +44,5 @@ public class Bullet {
     public void setY(int y) {
         this.y = y;
     }
+    
 }

@@ -9,25 +9,34 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CustomFrame extends JFrame implements Runnable {
     private Thread thread;
     Player leftPlayer;
     Player rightPlayer;
-
-    List<Bullet> bullets = new ArrayList<>();
-    /*int bulletX1 = -10;
-    int bulletY1 = -10;
-    int bulletX2 = -10;
-    int bulletY2 = -10;*/
+    boolean Connected = true;
+    Date d = new Date();
+    static int windowWidth;
+    static int windowHeight;
+    static List<Bullet> bullets = new ArrayList<>();
+    static List<Bullet> otherBullets = new ArrayList<>();
 
     public CustomFrame(Player thisPlayer) throws HeadlessException {
         this.addKeyListener(thisPlayer);
         this.getContentPane().setBackground(Color.cyan);
-        bullets.add(new Bullet(-10,-10));
-        bullets.add(new Bullet(-10,-10));
-        bullets.add(new Bullet(-10,-10));
+        windowWidth = getWidth();
+        windowHeight = getHeight();
+        bullets.add(new Bullet(-10,-10, 1, "This"));
+        bullets.add(new Bullet(-10,-10, 2, "This"));
+        bullets.add(new Bullet(-10,-10, 3, "This"));
+        bullets.add(new Bullet(getWidth()+10,getHeight()+20, 1, "Other"));
+        bullets.add(new Bullet(getWidth()+10,getHeight()+20, 2, "Other"));
+        bullets.add(new Bullet(getWidth()+10,getHeight()+20, 3, "Other"));
+        /*otherBullets.add(new Bullet(getWidth()+10,0));
+        otherBullets.add(new Bullet(getWidth()+10,0));
+        otherBullets.add(new Bullet(getWidth()+10,0));*/
         Thread th = new Thread(this);
         th.start();
     }
@@ -66,7 +75,7 @@ public class CustomFrame extends JFrame implements Runnable {
         leftTankImage(g);
 
         for(Bullet bullet : bullets ){
-            drawBullet(g, bullet.getX(), bullet.y);
+            drawBullet(g, bullet.getX(), bullet.getY());
         }
 
     }
@@ -140,29 +149,51 @@ public class CustomFrame extends JFrame implements Runnable {
 
     public void fire(int x, int y) {
         for(Bullet b : bullets){
-            if(b.getX() < 0){
+            if(b.getX() < 0 && b.getS().equals("This")){
                 b.setX(x+140);
                 b.setY(y+25);
                 break;
             }
         }
-        //bullets.add(new Bullet(-10,-10));
-        //fire(x,y);
+    }
+
+    public void fireOpposite(int x, int y) {
+        for(Bullet b : bullets){
+            if(b.getX() > 1220 && b.getS().equals("Other")){
+                b.setX(x-140);
+                b.setY(y-25);
+                break;
+            }
+        }
     }
 
     @Override
     public void run() {
         while (true) {
             for(Bullet b : bullets){
-                if(b.getX() >= 0 && b.getX() < 1280){
-                    b.setX( b.getX() + 80);
-
-                    repaint(b.getX()-80,b.getY(),40, 40);
-                    repaint(b.getX(),b.getY(),40, 40);
+                if(b.getX() >= 0 && b.getX() < 1220){
+                    if (b.getS().equals("This")) {
+                        b.setX(b.getX() + 80);
+                        Client.sendBulletData(b);
+                        repaint(b.getX() - 80, b.getY(), 40, 40);
+                        repaint(b.getX(), b.getY(), 40, 40);
+                    } else if (b.getS().equals("Other")) {
+                        System.out.println("Other x: "+b.getX());
+                        b.setX(b.getX() - 80);
+                        repaint(b.getX() - 80, b.getY(), 40, 40);
+                        repaint(b.getX(), b.getY(), 40, 40);
+                    }
                 }
                 if(b.getX() > 1220){
-                    b.setX(-10);
-                    b.setY(-10);
+                    if (b.getS().equals("This")) {
+                        b.setX(-10);
+                        b.setY(-10);
+                    }
+                } else if (b.getX() < 0) {
+                    if (b.getS().equals("Other")) {
+                        b.setX(getWidth()+10);
+                        b.setY(getHeight()+10);
+                    }
                 }
                 try{
                     if( b.getX() >= rightPlayer.getX() && ((b.getY() >= rightPlayer.getY()) && (b.getY() <= (rightPlayer.getY()+100)) )){
@@ -176,9 +207,21 @@ public class CustomFrame extends JFrame implements Runnable {
                         repaint();
                     }
                 }catch (Exception e){
-                    System.out.println("No right player found...");
+                    System.out.println("No right player at the moment...");
                 }
             }
+            /*for(Bullet b : otherBullets){
+                if(b.getX() >= 0 && b.getX() < 1280){
+                    b.setX( b.getX() + 80);
+                    repaint(b.getX()-80,b.getY(),40, 40);
+                    repaint(b.getX(),b.getY(),40, 40);
+                }
+                if(b.getX() > 1220){
+                    b.setX(-10);
+                    b.setY(-10);
+                    otherBullets.remove(b);
+                }
+            }*/
             try{
                 thread.sleep(750);
             }catch (Exception e){}

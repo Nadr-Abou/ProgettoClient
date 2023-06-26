@@ -81,23 +81,71 @@ public class Client {
 
         while (true) {
             String s;
+            P myPlayer = null;
+            Bullet b = null;
             try {
                 if ((s = in.readLine()) != null) {
                     if (s.equals("exit")) {
                         break;
-                    }
-                    System.out.println("Dall'altro client: "+s);
-                    P myPlayer = g.fromJson(s, P.class);
-                    if (myPlayer.getX() == 0) {
+                    } else if (s.equals("This player")) {
+                        s = in.readLine();
+                        myPlayer = g.fromJson(s, P.class);
+                        if(!myPlayer.isConnected()){
+                            f.setConnected(true);
+                        }
+                        thisP.setNHeart(myPlayer.getNHeart());
+                        thisPlayer.setHeart(thisP.getNHeart());
+                    } else if (s.equals("Other player")) {
+                        s = in.readLine();
+                        myPlayer = g.fromJson(s, P.class);
+                        if(!myPlayer.isConnected()){
+                            f.setConnected(true);
+                        }
                         otherP = myPlayer;
                         otherPlayer.setY(otherP.getY());
                         otherPlayer.setHeart(otherP.getNHeart());
-                    } else {
-                        thisP.setNHeart(myPlayer.getNHeart());
-                        thisPlayer.setHeart(thisP.getNHeart());
+                    } else if (s.equals("Bullet")) {
+                        s = in.readLine();
+                        b = g.fromJson(s, Bullet.class);
+                        b.setX(f.getWidth() - b.getX());
+                        System.out.println("Other bullet: "+s);
+                        if (b.getS().equals("This")) {
+                            for (Bullet bullet : CustomFrame.bullets) {
+                                if (bullet.getS().equals("Other")) {
+                                    if (b.getId() == bullet.getId()) {
+                                        b.setS("Other");
+                                        bullet = b;
+                                        f.fireOpposite(bullet.getX(), bullet.getY());
+                                        System.out.println(g.toJson(bullet));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        /*if (CustomFrame.otherBullets.size() > 0) {
+                            boolean bPresent = false;
+                            for (Bullet bullet : CustomFrame.otherBullets) {
+                                if (bullet.getId() == b.getId()) {
+                                    bullet = b;
+                                    bPresent = true;
+                                    break;
+                                }
+                            }
+                            if (bPresent == false) {
+                                CustomFrame.otherBullets.add(b);
+                            }
+                        } else {
+                            CustomFrame.otherBullets.add(b);
+                        }*/
+                        try {
+                            if (!myPlayer.isConnected()) {
+                                f.setConnected(true);
+                            }
+                        }catch (Exception e) {
+                            //System.out.println("My player null");
+                        }
                     }
                     f.repaint();
-                    System.out.println("Questo giocatore: "+thisPlayer);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -125,8 +173,15 @@ public class Client {
         otherP.setY(otherPlayer.getY());
         otherP.setNHeart(otherPlayer.getHeart());
         System.out.println("Method: sendPlayerData() to\n"+"This player: "+g.toJson(thisP));
+        out.println("This player");
         out.println(g.toJson(thisP));
         System.out.println("Method: sendPlayerData() to\n"+"Other player: "+g.toJson(otherP));
+        out.println("Other player");
         out.println(g.toJson(otherP));
+    }
+
+    public static void sendBulletData(Bullet b) {
+        out.println("Bullet");
+        out.println(g.toJson(b));
     }
 }

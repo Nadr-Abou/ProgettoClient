@@ -22,7 +22,7 @@ public class App {
             }
         });
         while (f == null) {
-            System.out.println("aspettando");
+            System.out.println("Waiting for another player...");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
