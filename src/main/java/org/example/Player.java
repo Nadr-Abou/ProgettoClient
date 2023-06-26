@@ -9,8 +9,10 @@ public class Player extends Client implements KeyListener {
     private CustomFrame f;
     private long lastPressProcessedUP = 0;
     private long lastPressProcessedDown = 0;
+    private long lastPressProcessedSpace = 0;
 
-    public Player() {}
+    public Player() {
+    }
 
     public int getHeart() {
         return heart;
@@ -18,7 +20,6 @@ public class Player extends Client implements KeyListener {
 
     public void setHeart(int heart) {
         this.heart = heart;
-
     }
 
     public int getX() {
@@ -52,20 +53,32 @@ public class Player extends Client implements KeyListener {
                     this.y -= 80;
                     System.out.println("Ciccato su!");
                     Client.sendPlayerData();
-                    f.repaint(this.getX(), this.getY(), 101, 180);
+                    f.repaint(this.getX(), this.getY(), 100, 180);
                     lastPressProcessedUP = System.currentTimeMillis();
                 }
                 break;
 
             case 40: //tasto freccia giù
                 if (this.y < (this.f.getHeight() - 140) && (System.currentTimeMillis() - lastPressProcessedDown) > 550) {
-                    y += 80;
+                    this.y += 80;
                     System.out.println("Ciccato giù!");
                     Client.sendPlayerData();
-                    f.repaint(this.getX(), this.getY() - 80, 101, 180);
+                    f.repaint(this.getX(), this.getY()-80, 100, 180);
                     lastPressProcessedDown = System.currentTimeMillis();
-                    break;
                 }
+                break;
+
+            case 32:
+                if ((System.currentTimeMillis() - lastPressProcessedSpace) > 5000) {
+                    System.out.println("cliccato space!");
+                    try {
+                        f.fire(this.x, this.y);
+                    } catch (Exception ex) {
+                        System.out.println("Can't fire!");
+                    }
+                    lastPressProcessedSpace = System.currentTimeMillis();
+                }
+                break;
         }
     }
 

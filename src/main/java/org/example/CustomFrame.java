@@ -8,15 +8,28 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CustomFrame extends JFrame{
+public class CustomFrame extends JFrame implements Runnable {
     private Thread thread;
     Player leftPlayer;
     Player rightPlayer;
 
+    List<Bullet> bullets = new ArrayList<>();
+    /*int bulletX1 = -10;
+    int bulletY1 = -10;
+    int bulletX2 = -10;
+    int bulletY2 = -10;*/
+
     public CustomFrame(Player thisPlayer) throws HeadlessException {
         this.addKeyListener(thisPlayer);
         this.getContentPane().setBackground(Color.cyan);
+        bullets.add(new Bullet(-10,-10));
+        bullets.add(new Bullet(-10,-10));
+        bullets.add(new Bullet(-10,-10));
+        Thread th = new Thread(this);
+        th.start();
     }
 
     public void setLeftPlayer(Player leftPlayer) {
@@ -46,11 +59,16 @@ public class CustomFrame extends JFrame{
         }
 
         g.setColor(Color.yellow);
-        g.drawLine(0,87,this.getWidth(),87);
-        g.drawLine(0,88,this.getWidth(),88);
+        g.drawLine(0, 87, this.getWidth(), 87);
+        g.drawLine(0, 88, this.getWidth(), 88);
 
         rightTankImage(g);
         leftTankImage(g);
+
+        for(Bullet bullet : bullets ){
+            drawBullet(g, bullet.getX(), bullet.y);
+        }
+
     }
 
     private void blockDrawImage(Graphics g) {
@@ -105,5 +123,65 @@ public class CustomFrame extends JFrame{
             return;
         }
         g.drawImage(img, leftPlayer.getX(), leftPlayer.getY(), 100, 100, null);
+    }
+
+    private void drawBullet(Graphics g, int x, int y) {
+        ClassLoader cl = this.getClass().getClassLoader();
+        InputStream url = cl.getResourceAsStream("Bullet.png");
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        g.drawImage(img, x, y, 40, 40, null);
+    }
+
+    public void fire(int x, int y) {
+        for(Bullet b : bullets){
+            if(b.getX() < 0){
+                b.setX(x+140);
+                b.setY(y+25);
+                break;
+            }
+        }
+        //bullets.add(new Bullet(-10,-10));
+        //fire(x,y);
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            for(Bullet b : bullets){
+                if(b.getX() >= 0 && b.getX() < 1280){
+                    b.setX( b.getX() + 80);
+
+                    repaint(b.getX()-80,b.getY(),40, 40);
+                    repaint(b.getX(),b.getY(),40, 40);
+                }
+                if(b.getX() > 1220){
+                    b.setX(-10);
+                    b.setY(-10);
+                }
+                try{
+                    if( b.getX() >= rightPlayer.getX() && ((b.getY() >= rightPlayer.getY()) && (b.getY() <= (rightPlayer.getY()+100)) )){
+                        int decHeart = rightPlayer.getHeart() - 1;
+                        rightPlayer.setHeart( decHeart );
+                        Client.otherPlayer.setHeart(decHeart);
+                        Client.sendPlayerData();
+                        b.setX(-10);
+                        b.setY(-10);
+                        if(rightPlayer.getHeart() == 0){}
+                        repaint();
+                    }
+                }catch (Exception e){
+                    System.out.println("No right player found...");
+                }
+            }
+            try{
+                thread.sleep(750);
+            }catch (Exception e){}
+        }
     }
 }
