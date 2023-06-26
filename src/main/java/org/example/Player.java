@@ -55,27 +55,29 @@ public class Player extends Client implements KeyListener {
                     this.y -= 80;
                     System.out.println("Ciccato su!");
                     Client.sendPlayerData();
-                    f.repaint(this.getX(), this.getY(), 101, 180);
+                    f.repaint(this.getX(), this.getY(), 100, 100);
                     lastPressProcessedUP = System.currentTimeMillis();
                 }
                 break;
 
             case 40: //tasto freccia giù
                 if (this.y < (this.f.getHeight() - 140) && (System.currentTimeMillis() - lastPressProcessedDown) > 550) {
-                    y += 80;
+                    this.y += 80;
                     System.out.println("Ciccato giù!");
                     Client.sendPlayerData();
-                    f.repaint(this.getX(), this.getY() - 80, 101, 180);
+                    f.repaint(this.getX(), this.getY(), 100, 100);
                     lastPressProcessedDown = System.currentTimeMillis();
                 }
                 break;
 
             case 32:
-                if ((System.currentTimeMillis() - lastPressProcessedSpace) > 2000) {
+                if ((System.currentTimeMillis() - lastPressProcessedSpace) > 5000) {
+                    System.out.println("cliccato space!");
                     try {
                         f.fire(this.x, this.y);
                     } catch (Exception ex) {
                     }
+                    lastPressProcessedDown = System.currentTimeMillis();
                 }
                 break;
         }

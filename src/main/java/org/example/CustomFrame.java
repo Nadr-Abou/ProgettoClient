@@ -67,7 +67,7 @@ public class CustomFrame extends JFrame implements Runnable {
         leftTankImage(g);
 
         for(Bullet bullet : bullets ){
-            drawBullet(g,bullet.getX(),bullet.getY());
+            drawBullet(g, bullet.getX(),bullet.y);
         }
 
     }
@@ -141,10 +141,10 @@ public class CustomFrame extends JFrame implements Runnable {
 
 
     public void fire(int x, int y) {
-        for(int i=0; i < bullets.size(); i++){
-            if(bullets.get(i).getX() < 0){
-                bullets.get(i).setX(x);
-                bullets.get(i).setY(y);
+        for(Bullet b : bullets){
+            if(b.getX() < 0){
+                b.setX(x);
+                b.setY(y);
                 break;
             }
         }
@@ -160,11 +160,11 @@ public class CustomFrame extends JFrame implements Runnable {
 
 
             for(Bullet b : bullets){
-                System.out.println(b.getX());
-                if(b.getX() >= 0 && b.getX() < 1230){
+                if(b.getX() >= 0 && b.getX() < 1280){
+                    System.out.println(b.getX());
                     b.setX( b.getX() + 40);
+                    repaint(0,b.getY(),1220, 40);
                 }
-                repaint(b.getX(),b.getY(),40, 40);
             }
 
             for(Bullet b : bullets){

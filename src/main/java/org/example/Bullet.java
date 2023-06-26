@@ -9,7 +9,7 @@ public class Bullet {
         this.y = y;
     }
 
-    public int getX() {
+    public int getX(){
         return x;
     }
 

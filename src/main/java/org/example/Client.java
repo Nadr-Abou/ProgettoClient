@@ -63,14 +63,6 @@ public class Client {
             System.out.println("Si è verificato un errore per via del messaggio ricevuto oppure il server non è connesso");
         }
 
-        thisPlayer.setX(thisP.getX());
-        otherPlayer.setX(otherP.getX());
-
-        thisPlayer.setY(thisP.getY());
-        otherPlayer.setY(otherP.getY());
-
-        thisPlayer.setHeart(thisP.getNHeart());
-        otherPlayer.setHeart(otherP.getNHeart());
 
         //Coordinate dei giocatori prese dal server
         setCoordinatesFromP();
