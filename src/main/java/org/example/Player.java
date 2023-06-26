@@ -20,6 +20,7 @@ public class Player extends Client implements KeyListener {
 
     public void setHeart(int heart) {
         this.heart = heart;
+
     }
 
     public int getX() {
@@ -40,7 +41,8 @@ public class Player extends Client implements KeyListener {
 
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -74,16 +76,16 @@ public class Player extends Client implements KeyListener {
                     try {
                         f.fire(this.x, this.y);
                     } catch (Exception ex) {
-                        System.out.println("Can't fire!");
                     }
-                    lastPressProcessedSpace = System.currentTimeMillis();
+                    lastPressProcessedDown = System.currentTimeMillis();
                 }
                 break;
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+    }
 
     public void setF(CustomFrame f) {
         this.f = f;

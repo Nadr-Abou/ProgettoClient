@@ -22,6 +22,7 @@ public class CustomFrame extends JFrame implements Runnable {
     int bulletX2 = -10;
     int bulletY2 = -10;*/
 
+
     public CustomFrame(Player thisPlayer) throws HeadlessException {
         this.addKeyListener(thisPlayer);
         this.getContentPane().setBackground(Color.cyan);
@@ -66,7 +67,7 @@ public class CustomFrame extends JFrame implements Runnable {
         leftTankImage(g);
 
         for(Bullet bullet : bullets ){
-            drawBullet(g, bullet.getX(), bullet.y);
+            drawBullet(g, bullet.getX(),bullet.y);
         }
 
     }
@@ -138,11 +139,12 @@ public class CustomFrame extends JFrame implements Runnable {
         g.drawImage(img, x, y, 40, 40, null);
     }
 
+
     public void fire(int x, int y) {
         for(Bullet b : bullets){
             if(b.getX() < 0){
                 b.setX(x+140);
-                b.setY(y+25);
+                b.setY(y+50);
                 break;
             }
         }
@@ -150,38 +152,33 @@ public class CustomFrame extends JFrame implements Runnable {
         //fire(x,y);
     }
 
+
     @Override
     public void run() {
+
         while (true) {
+
+
             for(Bullet b : bullets){
                 if(b.getX() >= 0 && b.getX() < 1280){
-                    b.setX( b.getX() + 80);
-
-                    repaint(b.getX()-80,b.getY(),40, 40);
-                    repaint(b.getX(),b.getY(),40, 40);
+                    System.out.println(b.getX());
+                    b.setX( b.getX() + 40);
+                    repaint(b.getX()-40,b.getY(),80, 40);
                 }
-                if(b.getX() > 1220){
+            }
+
+            for(Bullet b : bullets){
+                if(b.getX() > 1230){
                     b.setX(-10);
                     b.setY(-10);
                 }
-                try{
-                    if( b.getX() >= rightPlayer.getX() && ((b.getY() >= rightPlayer.getY()) && (b.getY() <= (rightPlayer.getY()+100)) )){
-                        int decHeart = rightPlayer.getHeart() - 1;
-                        rightPlayer.setHeart( decHeart );
-                        Client.otherPlayer.setHeart(decHeart);
-                        Client.sendPlayerData();
-                        b.setX(-10);
-                        b.setY(-10);
-                        if(rightPlayer.getHeart() == 0){}
-                        repaint();
-                    }
-                }catch (Exception e){
-                    System.out.println("No right player found...");
-                }
             }
+
             try{
-                thread.sleep(750);
-            }catch (Exception e){}
+                thread.sleep(500);
+            }catch (Exception e){
+
+            }
         }
     }
 }
