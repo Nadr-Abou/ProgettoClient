@@ -63,13 +63,11 @@ public class Client {
             System.out.println("Si è verificato un errore per via del messaggio ricevuto oppure il server non è connesso");
         }
 
-
         //Coordinate dei giocatori prese dal server
         setCoordinatesFromP();
 
         thisPlayer.setF(f);
         otherPlayer.setF(f);
-
 
         if (thisPlayer.getX() < 500) {
             f.setLeftPlayer(thisPlayer);
@@ -81,12 +79,6 @@ public class Client {
 
         f.repaint();
 
-        /*
-        Movimento movements = new Movimento(thisPlayer, otherPlayer, f);
-        Thread thread = new Thread(movements);
-        thread.start();
-        */
-
         while (true) {
             String s;
             try {
@@ -94,13 +86,18 @@ public class Client {
                     if (s.equals("exit")) {
                         break;
                     }
-                    otherP = g.fromJson(s, P.class);
-
-                    otherPlayer.setY(otherP.getY());
-                    otherPlayer.setHeart(otherP.getNHeart());
-
+                    System.out.println("Dall'altro client: "+s);
+                    P myPlayer = g.fromJson(s, P.class);
+                    if (myPlayer.getX() == 0) {
+                        otherP = myPlayer;
+                        otherPlayer.setY(otherP.getY());
+                        otherPlayer.setHeart(otherP.getNHeart());
+                    } else {
+                        thisP.setNHeart(myPlayer.getNHeart());
+                        thisPlayer.setHeart(thisP.getNHeart());
+                    }
                     f.repaint();
-                    System.out.println(thisPlayer);
+                    System.out.println("Questo giocatore: "+thisPlayer);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -124,7 +121,12 @@ public class Client {
         thisP.setX(thisPlayer.getX());
         thisP.setY(thisPlayer.getY());
         thisP.setNHeart(thisPlayer.getHeart());
-        System.out.println("This player: "+g.toJson(thisP));
+        otherP.setX(otherPlayer.getX());
+        otherP.setY(otherPlayer.getY());
+        otherP.setNHeart(otherPlayer.getHeart());
+        System.out.println("Method: sendPlayerData() to\n"+"This player: "+g.toJson(thisP));
         out.println(g.toJson(thisP));
+        System.out.println("Method: sendPlayerData() to\n"+"Other player: "+g.toJson(otherP));
+        out.println(g.toJson(otherP));
     }
 }
