@@ -143,8 +143,8 @@ public class CustomFrame extends JFrame implements Runnable {
     public void fire(int x, int y) {
         for(Bullet b : bullets){
             if(b.getX() < 0){
-                b.setX(x);
-                b.setY(y);
+                b.setX(x+140);
+                b.setY(y+50);
                 break;
             }
         }
@@ -163,7 +163,7 @@ public class CustomFrame extends JFrame implements Runnable {
                 if(b.getX() >= 0 && b.getX() < 1280){
                     System.out.println(b.getX());
                     b.setX( b.getX() + 40);
-                    repaint(0,b.getY(),1220, 40);
+                    repaint(b.getX()-40,b.getY(),80, 40);
                 }
             }
 

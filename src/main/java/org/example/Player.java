@@ -55,7 +55,7 @@ public class Player extends Client implements KeyListener {
                     this.y -= 80;
                     System.out.println("Ciccato su!");
                     Client.sendPlayerData();
-                    f.repaint(this.getX(), this.getY(), 100, 100);
+                    f.repaint(this.getX(), this.getY(), 100, 180);
                     lastPressProcessedUP = System.currentTimeMillis();
                 }
                 break;
@@ -65,7 +65,7 @@ public class Player extends Client implements KeyListener {
                     this.y += 80;
                     System.out.println("Ciccato giù!");
                     Client.sendPlayerData();
-                    f.repaint(this.getX(), this.getY(), 100, 100);
+                    f.repaint(this.getX(), this.getY()-80, 100, 180);
                     lastPressProcessedDown = System.currentTimeMillis();
                 }
                 break;
