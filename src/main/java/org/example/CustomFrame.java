@@ -8,20 +8,27 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomFrame extends JFrame implements Runnable {
     private Thread thread;
     Player leftPlayer;
     Player rightPlayer;
-    int bulletX1 = -10;
+
+    List<Bullet> bullets = new ArrayList<>();
+    /*int bulletX1 = -10;
     int bulletY1 = -10;
     int bulletX2 = -10;
-    int bulletY2 = -10;
+    int bulletY2 = -10;*/
 
 
     public CustomFrame(Player thisPlayer) throws HeadlessException {
         this.addKeyListener(thisPlayer);
         this.getContentPane().setBackground(Color.cyan);
+        bullets.add(new Bullet(-10,-10));
+        bullets.add(new Bullet(-10,-10));
+        bullets.add(new Bullet(-10,-10));
         Thread th = new Thread(this);
         th.start();
     }
@@ -59,8 +66,10 @@ public class CustomFrame extends JFrame implements Runnable {
         rightTankImage(g);
         leftTankImage(g);
 
-        drawBullet(g);
-        drawBullet2(g);
+        for(Bullet bullet : bullets ){
+            drawBullet(g,bullet.getX(),bullet.getY());
+        }
+
     }
 
     private void blockDrawImage(Graphics g) {
@@ -117,7 +126,7 @@ public class CustomFrame extends JFrame implements Runnable {
         g.drawImage(img, leftPlayer.getX(), leftPlayer.getY(), 100, 100, null);
     }
 
-    private void drawBullet(Graphics g) {
+    private void drawBullet(Graphics g, int x, int y) {
         ClassLoader cl = this.getClass().getClassLoader();
         InputStream url = cl.getResourceAsStream("Bullet.png");
         BufferedImage img = null;
@@ -127,31 +136,20 @@ public class CustomFrame extends JFrame implements Runnable {
             e.printStackTrace();
             return;
         }
-        g.drawImage(img, bulletX1, bulletY1, 40, 40, null);
+        g.drawImage(img, x, y, 40, 40, null);
     }
 
-    private void drawBullet2(Graphics g) {
-        ClassLoader cl = this.getClass().getClassLoader();
-        InputStream url = cl.getResourceAsStream("Bullet.png");
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        g.drawImage(img, bulletX2, bulletY2, 40, 40, null);
-    }
 
     public void fire(int x, int y) {
-        if (bulletX1 < 0 && bulletY1 < 0) { //controlla se il proiettile1 è inattivo
-            bulletX1 = x;
-            bulletY1 = y;
-        } else {
-
-            bulletX2 = x;
-            bulletY2 = y;
+        for(int i=0; i < bullets.size(); i++){
+            if(bullets.get(i).getX() < 0){
+                bullets.get(i).setX(x);
+                bullets.get(i).setY(y);
+                break;
+            }
         }
+        //bullets.add(new Bullet(-10,-10));
+        //fire(x,y);
     }
 
 
@@ -160,22 +158,20 @@ public class CustomFrame extends JFrame implements Runnable {
 
         while (true) {
 
-            if (bulletX1 > 0 && bulletY1 > 0) { //controlla se un qualunque proiettile sia dentro l'area di gioco se si allora lo sposta a destra
-                bulletX1-=40;
-                repaint(bulletX1,bulletY1,80,40);
-            }
-            if (bulletX2 > 0 && bulletY2 > 0) {
-                bulletX2-=40;
-                repaint(bulletX2,bulletY2,80,40);
+
+            for(Bullet b : bullets){
+                System.out.println(b.getX());
+                if(b.getX() >= 0 && b.getX() < 1230){
+                    b.setX( b.getX() + 40);
+                }
+                repaint(b.getX(),b.getY(),40, 40);
             }
 
-            if (bulletX1 > 1230) {
-                bulletX1= -10;
-                bulletY1= -10;
-            }
-            if (bulletX2 > 1230) {
-                bulletX2= -10;
-                bulletY2= -10;
+            for(Bullet b : bullets){
+                if(b.getX() > 1230){
+                    b.setX(-10);
+                    b.setY(-10);
+                }
             }
 
             try{
