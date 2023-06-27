@@ -1,16 +1,22 @@
 package org.example;
 
+import com.google.gson.Gson;
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Client {
-    Player thisPlayer;
-    Player otherPlayer;
-    CustomFrame f;
-    PrintWriter out;
-    BufferedReader in;
+    static Player thisPlayer;
+    static Player otherPlayer;
+    static CustomFrame f;
+    static PrintWriter out;
+    static BufferedReader in;
+    static P thisP = null;
+    static P otherP = null;
+    static Gson g = new Gson();
 
     public Client(Player thisPlayer, Player otherPlayer, CustomFrame f) {
         this.thisPlayer = thisPlayer;
@@ -21,26 +27,23 @@ public class Client {
 
     public Client() {}
 
-    public void clientMain() {
-
+    static void clientMain() {
         String hostName = "127.0.0.1";
         int portNumber = 1234;
         Socket clientSocket = null;
 
         try {
             clientSocket = new Socket(hostName, portNumber);
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("cannot reach server " + e);
         }
 
-
-
         try {
+            assert clientSocket != null;
             out = new PrintWriter(clientSocket.getOutputStream(), true);
         } catch (Exception e) {
             System.out.println("YOU MUST CONNECT THE SERVER!!");
         }
-
 
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -48,25 +51,23 @@ public class Client {
             System.out.println("cannot allocate bufferedreader");
         }
 
-
         try {
-            String paramIniziali = in.readLine();
             /*SPACCHETTAMENTO JSON NELLE COORDINATE*/
+            String paramIniziali = in.readLine();
+            thisP = g.fromJson(paramIniziali, P.class);
+
+            paramIniziali = in.readLine();
+            otherP = g.fromJson(paramIniziali, P.class);
 
         } catch (Exception e) {
-            System.out.println("Connettere il server");
+            System.out.println("Si è verificato un errore per via del messaggio ricevuto oppure il server non è connesso");
         }
 
-        otherPlayer.setY(250);
-        otherPlayer.setX(0);
-        thisPlayer.setY(500);
-        thisPlayer.setX(1220 - 100);
+        //Coordinate dei giocatori prese dal server
+        setCoordinatesFromP();
 
         thisPlayer.setF(f);
         otherPlayer.setF(f);
-
-        f.repaint();
-
 
         if (thisPlayer.getX() < 500) {
             f.setLeftPlayer(thisPlayer);
@@ -76,12 +77,111 @@ public class Client {
             f.setRightPlayer(thisPlayer);
         }
 
-
+        f.repaint();
 
         while (true) {
-
+            String s;
+            P myPlayer = null;
+            Bullet b = null;
+            try {
+                if ((s = in.readLine()) != null) {
+                    if (s.equals("exit")) {
+                        break;
+                    } else if (s.equals("This player")) {
+                        s = in.readLine();
+                        myPlayer = g.fromJson(s, P.class);
+                        if(!myPlayer.isConnected()){
+                            f.setConnected(true);
+                        }
+                        thisP.setNHeart(myPlayer.getNHeart());
+                        thisPlayer.setHeart(thisP.getNHeart());
+                    } else if (s.equals("Other player")) {
+                        s = in.readLine();
+                        myPlayer = g.fromJson(s, P.class);
+                        if(!myPlayer.isConnected()){
+                            f.setConnected(true);
+                        }
+                        otherP = myPlayer;
+                        otherPlayer.setY(otherP.getY());
+                        otherPlayer.setHeart(otherP.getNHeart());
+                    } else if (s.equals("Bullet")) {
+                        s = in.readLine();
+                        b = g.fromJson(s, Bullet.class);
+                        b.setX(f.getWidth() - b.getX());
+                        System.out.println("Other bullet: "+s);
+                        if (b.getS().equals("This")) {
+                            for (Bullet bullet : CustomFrame.bullets) {
+                                if (bullet.getS().equals("Other")) {
+                                    if (b.getId() == bullet.getId()) {
+                                        b.setS("Other");
+                                        bullet = b;
+                                        f.fireOpposite(bullet.getX(), bullet.getY());
+                                        System.out.println(g.toJson(bullet));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        /*if (CustomFrame.otherBullets.size() > 0) {
+                            boolean bPresent = false;
+                            for (Bullet bullet : CustomFrame.otherBullets) {
+                                if (bullet.getId() == b.getId()) {
+                                    bullet = b;
+                                    bPresent = true;
+                                    break;
+                                }
+                            }
+                            if (bPresent == false) {
+                                CustomFrame.otherBullets.add(b);
+                            }
+                        } else {
+                            CustomFrame.otherBullets.add(b);
+                        }*/
+                        try {
+                            if (!myPlayer.isConnected()) {
+                                f.setConnected(true);
+                            }
+                        }catch (Exception e) {
+                            //System.out.println("My player null");
+                        }
+                    }
+                    f.repaint();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                break;
+            }
         }
+    }
 
+    public static void setCoordinatesFromP() {
+        thisPlayer.setY(thisP.getY());
+        thisPlayer.setX(thisP.getX());
+        thisPlayer.setHeart(thisP.getNHeart());
+        otherPlayer.setY(otherP.getY());
+        otherPlayer.setX(otherP.getX());
+        otherPlayer.setHeart(otherP.getNHeart());
+        System.out.println("This player: {x: "+thisPlayer.getX()+" y: "+thisPlayer.getY()+"}");
+        System.out.println("Other player: {x: "+otherPlayer.getX()+" y: "+otherPlayer.getY()+"}");
+    }
 
+    public static void sendPlayerData() {
+        thisP.setX(thisPlayer.getX());
+        thisP.setY(thisPlayer.getY());
+        thisP.setNHeart(thisPlayer.getHeart());
+        otherP.setX(otherPlayer.getX());
+        otherP.setY(otherPlayer.getY());
+        otherP.setNHeart(otherPlayer.getHeart());
+        System.out.println("Method: sendPlayerData() to\n"+"This player: "+g.toJson(thisP));
+        out.println("This player");
+        out.println(g.toJson(thisP));
+        System.out.println("Method: sendPlayerData() to\n"+"Other player: "+g.toJson(otherP));
+        out.println("Other player");
+        out.println(g.toJson(otherP));
+    }
+
+    public static void sendBulletData(Bullet b) {
+        out.println("Bullet");
+        out.println(g.toJson(b));
     }
 }

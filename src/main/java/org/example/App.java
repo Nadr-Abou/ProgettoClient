@@ -1,5 +1,7 @@
 package org.example;
 
+import com.google.gson.Gson;
+
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,20 +14,23 @@ public class App {
     static CustomFrame f = null;
 
     public static void main(String[] args) {
-        Player thisPlayer = new Player(3);
-        Player otherPlayer = new Player(3);
+        Player thisPlayer = new Player();
+        Player otherPlayer = new Player();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI(thisPlayer, otherPlayer);
             }
         });
         while (f == null) {
-            System.out.println("aspettando");
+            System.out.println("Waiting for another player...");
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                System.out.println("Interrupted exception");
+            }
         }
         new Client(thisPlayer, otherPlayer, f);
-
     }
-
 
     private static void createAndShowGUI(Player thisPlayer, Player otherPlayer) {
         f = new CustomFrame(thisPlayer);
@@ -34,7 +39,4 @@ public class App {
         f.setResizable(false);
         f.setVisible(true);
     }
-
-
-
 }
