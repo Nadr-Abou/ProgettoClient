@@ -17,7 +17,11 @@ public class CustomFrame extends JFrame implements Runnable {
     Player leftPlayer;
     Player rightPlayer;
     boolean Connected = true;
+    private int leftWin = 0;
+    private int rightWin = 0;
+    Font f = new Font("serif", Font.PLAIN, 50);
     Date d = new Date();
+
     static List<Bullet> bullets = new ArrayList<>();
     static List<Bullet> otherBullets = new ArrayList<>();
 
@@ -33,6 +37,7 @@ public class CustomFrame extends JFrame implements Runnable {
         /*otherBullets.add(new Bullet(getWidth()+10,0));
         otherBullets.add(new Bullet(getWidth()+10,0));
         otherBullets.add(new Bullet(getWidth()+10,0));*/
+
         Thread th = new Thread(this);
         th.start();
     }
@@ -58,12 +63,13 @@ public class CustomFrame extends JFrame implements Runnable {
         }
 
         if(!Connected){
-            blockDrawImage(g,"");
+            blockDrawImage(g,"GameDisconnected.png");
             return;
         }
 
-        if(rightPlayer.getHeart() == 0){
-            blockDrawImage(g,"");
+        if(rightPlayer.getHeart() == 0 || leftPlayer.getHeart()==0){
+            //blockDrawImage(g,"GameEnded.png");
+            //return;
         }
 
         int w = this.getWidth();
@@ -76,7 +82,11 @@ public class CustomFrame extends JFrame implements Runnable {
             heartDrawImage(g, (w - 50) - (60 * i));
         }
 
+
+
         g.setColor(Color.yellow);
+        g.setFont(f);
+        g.drawString(leftWin + " - " + rightWin,580,75);
         g.drawLine(0, 87, this.getWidth(), 87);
         g.drawLine(0, 88, this.getWidth(), 88);
 
@@ -214,7 +224,9 @@ public class CustomFrame extends JFrame implements Runnable {
                         Client.sendPlayerData();
                         b.setX(-10);
                         b.setY(-10);
-                        if(rightPlayer.getHeart() == 0){}
+                        if(rightPlayer.getHeart() == 0){leftWin++;}
+                        if (leftPlayer.getHeart() == 0){
+                            rightWin++;}
                         repaint();
                     }
                 }catch (Exception e){

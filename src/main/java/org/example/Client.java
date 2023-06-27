@@ -85,22 +85,18 @@ public class Client {
             Bullet b = null;
             try {
                 if ((s = in.readLine()) != null) {
-                    if (s.equals("exit")) {
+                    if (s.equals("{\"command\":\"exit\"}")) {
+                        f.setConnected(false);
+                        f.repaint();
                         break;
                     } else if (s.equals("This player")) {
                         s = in.readLine();
                         myPlayer = g.fromJson(s, P.class);
-                        if(!myPlayer.isConnected()){
-                            f.setConnected(true);
-                        }
                         thisP.setNHeart(myPlayer.getNHeart());
                         thisPlayer.setHeart(thisP.getNHeart());
                     } else if (s.equals("Other player")) {
                         s = in.readLine();
                         myPlayer = g.fromJson(s, P.class);
-                        if(!myPlayer.isConnected()){
-                            f.setConnected(true);
-                        }
                         otherP = myPlayer;
                         otherPlayer.setY(otherP.getY());
                         otherPlayer.setHeart(otherP.getNHeart());
@@ -139,7 +135,7 @@ public class Client {
                         }*/
                         try {
                             if (!myPlayer.isConnected()) {
-                                f.setConnected(true);
+                                f.setConnected(false);
                             }
                         }catch (Exception e) {
                             //System.out.println("My player null");
