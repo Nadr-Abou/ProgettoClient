@@ -45,12 +45,25 @@ public class CustomFrame extends JFrame implements Runnable {
         this.rightPlayer = rightPlayer;
     }
 
+    public void setConnected(boolean connected){
+        this.Connected = connected;
+    }
+
     public void paint(Graphics g) {
         super.paint(g);
 
         if (leftPlayer == null || rightPlayer == null) {
-            blockDrawImage(g);
+            blockDrawImage(g,"initialIMG.png");
             return;
+        }
+
+        if(!Connected){
+            blockDrawImage(g,"");
+            return;
+        }
+
+        if(rightPlayer.getHeart() == 0){
+            blockDrawImage(g,"");
         }
 
         int w = this.getWidth();
@@ -76,9 +89,9 @@ public class CustomFrame extends JFrame implements Runnable {
 
     }
 
-    private void blockDrawImage(Graphics g) {
+    private void blockDrawImage(Graphics g, String urlImg) {
         ClassLoader cl = this.getClass().getClassLoader();
-        InputStream url = cl.getResourceAsStream("initialIMG.png");
+        InputStream url = cl.getResourceAsStream(urlImg);
         BufferedImage img = null;
 
         try {

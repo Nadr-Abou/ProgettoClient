@@ -9,6 +9,7 @@ public class P {
     private int nHeart;
     private int x;
     private int y;
+    private boolean connected = true;
 
     public P(int nHeart, double x, double y) {
         this.nHeart = nHeart;
@@ -39,4 +40,8 @@ public class P {
     public void setY(int y) {
         this.y = (int) y;
     }
+
+    public boolean isConnected(){return connected;}
+
+    public void setConnected(boolean connected){this.connected = connected;}
 }
