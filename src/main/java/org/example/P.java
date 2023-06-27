@@ -9,7 +9,7 @@ public class P {
     private int nHeart;
     private int x;
     private int y;
-    private boolean connected;
+    private boolean connected = true;
 
     public P(int nHeart, double x, double y) {
         this.nHeart = nHeart;

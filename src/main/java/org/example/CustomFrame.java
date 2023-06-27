@@ -3,13 +3,10 @@ package org.example;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class CustomFrame extends JFrame implements Runnable {
@@ -17,27 +14,25 @@ public class CustomFrame extends JFrame implements Runnable {
     Player leftPlayer;
     Player rightPlayer;
     boolean Connected = true;
-    private int leftWin = 0;
-    private int rightWin = 0;
-    Font f = new Font("serif", Font.PLAIN, 50);
-    Date d = new Date();
-
     static List<Bullet> bullets = new ArrayList<>();
-    static List<Bullet> otherBullets = new ArrayList<>();
+    private ClassLoader cl = null;
+    private InputStream heart = null;
+    private InputStream rightTank = null;
+    private InputStream leftTank = null;
+    private InputStream bullet = null;
+    private InputStream initialIMG = null;
 
     public CustomFrame(Player thisPlayer) throws HeadlessException {
         this.addKeyListener(thisPlayer);
         this.getContentPane().setBackground(Color.cyan);
+        cl = this.getClass().getClassLoader();
+        initialIMG = cl.getResourceAsStream("initialIMG.png");
         bullets.add(new Bullet(-10,-10, 1, "This"));
         bullets.add(new Bullet(-10,-10, 2, "This"));
         bullets.add(new Bullet(-10,-10, 3, "This"));
         bullets.add(new Bullet(getWidth()+10,getHeight()+10, 1, "Other"));
         bullets.add(new Bullet(getWidth()+10,getHeight()+10, 2, "Other"));
         bullets.add(new Bullet(getWidth()+10,getHeight()+10, 3, "Other"));
-        /*otherBullets.add(new Bullet(getWidth()+10,0));
-        otherBullets.add(new Bullet(getWidth()+10,0));
-        otherBullets.add(new Bullet(getWidth()+10,0));*/
-
         Thread th = new Thread(this);
         th.start();
     }
@@ -58,22 +53,20 @@ public class CustomFrame extends JFrame implements Runnable {
         super.paint(g);
 
         if (leftPlayer == null || rightPlayer == null) {
-            blockDrawImage(g,"initialIMG.png");
+            blockDrawImage(g,initialIMG);
             return;
         }
 
         if(!Connected){
-            blockDrawImage(g,"GameDisconnected.png");
+            blockDrawImage(g,initialIMG); //Da sostituire
             return;
         }
 
-        if(rightPlayer.getHeart() == 0 || leftPlayer.getHeart()==0){
-            //blockDrawImage(g,"GameEnded.png");
-            //return;
+        if(rightPlayer.getHeart() == 0){
+            blockDrawImage(g,initialIMG); //Da sostituire
         }
 
         int w = this.getWidth();
-        int h = this.getHeight();
 
         for (int i = 1; i <= leftPlayer.getHeart(); i++) {
             heartDrawImage(g, 60 * i);
@@ -82,11 +75,7 @@ public class CustomFrame extends JFrame implements Runnable {
             heartDrawImage(g, (w - 50) - (60 * i));
         }
 
-
-
         g.setColor(Color.yellow);
-        g.setFont(f);
-        g.drawString(leftWin + " - " + rightWin,580,75);
         g.drawLine(0, 87, this.getWidth(), 87);
         g.drawLine(0, 88, this.getWidth(), 88);
 
@@ -99,13 +88,10 @@ public class CustomFrame extends JFrame implements Runnable {
 
     }
 
-    private void blockDrawImage(Graphics g, String urlImg) {
-        ClassLoader cl = this.getClass().getClassLoader();
-        InputStream url = cl.getResourceAsStream(urlImg);
+    private void blockDrawImage(Graphics g, InputStream urlImg) {
         BufferedImage img = null;
-
         try {
-            img = ImageIO.read(url);
+            img = ImageIO.read(urlImg);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -117,11 +103,10 @@ public class CustomFrame extends JFrame implements Runnable {
     }
 
     private void heartDrawImage(Graphics g, int x) {
-        ClassLoader cl = this.getClass().getClassLoader();
-        InputStream url = cl.getResourceAsStream("Heart.png");
         BufferedImage img = null;
+        heart = cl.getResourceAsStream("Heart.png");
         try {
-            img = ImageIO.read(url);
+            img = ImageIO.read(heart);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -130,11 +115,10 @@ public class CustomFrame extends JFrame implements Runnable {
     }
 
     private void rightTankImage(Graphics g) {
-        ClassLoader cl = this.getClass().getClassLoader();
-        InputStream url = cl.getResourceAsStream("rightTank.png");
         BufferedImage img = null;
+        rightTank = cl.getResourceAsStream("rightTank.png");
         try {
-            img = ImageIO.read(url);
+            img = ImageIO.read(rightTank);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -143,11 +127,10 @@ public class CustomFrame extends JFrame implements Runnable {
     }
 
     private void leftTankImage(Graphics g) {
-        ClassLoader cl = this.getClass().getClassLoader();
-        InputStream url = cl.getResourceAsStream("LeftTank.png");
         BufferedImage img = null;
+        leftTank = cl.getResourceAsStream("LeftTank.png");
         try {
-            img = ImageIO.read(url);
+            img = ImageIO.read(leftTank);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -156,11 +139,10 @@ public class CustomFrame extends JFrame implements Runnable {
     }
 
     private void drawBullet(Graphics g, int x, int y) {
-        ClassLoader cl = this.getClass().getClassLoader();
-        InputStream url = cl.getResourceAsStream("Bullet.png");
         BufferedImage img = null;
+        bullet = cl.getResourceAsStream("Bullet.png");
         try {
-            img = ImageIO.read(url);
+            img = ImageIO.read(bullet);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -171,8 +153,9 @@ public class CustomFrame extends JFrame implements Runnable {
     public void fire(int x, int y) {
         for(Bullet b : bullets){
             if(b.getX() < 0 && b.getS().equals("This")){
-                b.setX(x+140);
                 b.setY(y+25);
+                Client.sendBulletData(b);
+                b.setX(x+140);
                 break;
             }
         }
@@ -180,9 +163,9 @@ public class CustomFrame extends JFrame implements Runnable {
 
     public void fireOpposite(int x, int y) {
         for(Bullet b : bullets){
-            if(b.getX() > 1220 && b.getS().equals("Other")){
+            if(b.getX() > getWidth() && b.getS().equals("Other")){
                 b.setX(x-140);
-                b.setY(y-25);
+                b.setY(y);
                 break;
             }
         }
@@ -192,20 +175,18 @@ public class CustomFrame extends JFrame implements Runnable {
     public void run() {
         while (true) {
             for(Bullet b : bullets){
-                if(b.getX() >= 0 && b.getX() < 1220){
+                if(b.getX() >= 0 && b.getX() < getWidth()){
                     if (b.getS().equals("This")) {
                         b.setX(b.getX() + 80);
-                        Client.sendBulletData(b);
                         repaint(b.getX() - 80, b.getY(), 40, 40);
-                        repaint(b.getX(), b.getY(), 40, 40);
                     } else if (b.getS().equals("Other")) {
                         System.out.println("Other x: "+b.getX());
                         b.setX(b.getX() - 80);
-                        repaint(b.getX() - 80, b.getY(), 40, 40);
-                        repaint(b.getX(), b.getY(), 40, 40);
+                        repaint(b.getX() + 80, b.getY(), 40, 40);
                     }
+                    repaint(b.getX(), b.getY(), 40, 40);
                 }
-                if(b.getX() > 1220){
+                if(b.getX() > getWidth()){
                     if (b.getS().equals("This")) {
                         b.setX(-10);
                         b.setY(-10);
@@ -222,29 +203,13 @@ public class CustomFrame extends JFrame implements Runnable {
                         rightPlayer.setHeart( decHeart );
                         Client.otherPlayer.setHeart(decHeart);
                         Client.sendPlayerData();
-                        b.setX(-10);
-                        b.setY(-10);
-                        if(rightPlayer.getHeart() == 0){leftWin++;}
-                        if (leftPlayer.getHeart() == 0){
-                            rightWin++;}
+                        if(rightPlayer.getHeart() == 0){}
                         repaint();
                     }
                 }catch (Exception e){
                     System.out.println("No right player at the moment...");
                 }
             }
-            /*for(Bullet b : otherBullets){
-                if(b.getX() >= 0 && b.getX() < 1280){
-                    b.setX( b.getX() + 80);
-                    repaint(b.getX()-80,b.getY(),40, 40);
-                    repaint(b.getX(),b.getY(),40, 40);
-                }
-                if(b.getX() > 1220){
-                    b.setX(-10);
-                    b.setY(-10);
-                    otherBullets.remove(b);
-                }
-            }*/
             try{
                 thread.sleep(750);
             }catch (Exception e){}

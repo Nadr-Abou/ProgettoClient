@@ -85,18 +85,22 @@ public class Client {
             Bullet b = null;
             try {
                 if ((s = in.readLine()) != null) {
-                    if (s.equals("{\"command\":\"exit\"}")) {
-                        f.setConnected(false);
-                        f.repaint();
+                    if (s.equals("exit")) {
                         break;
                     } else if (s.equals("This player")) {
                         s = in.readLine();
                         myPlayer = g.fromJson(s, P.class);
+                        if(!myPlayer.isConnected()){
+                            f.setConnected(true);
+                        }
                         thisP.setNHeart(myPlayer.getNHeart());
                         thisPlayer.setHeart(thisP.getNHeart());
                     } else if (s.equals("Other player")) {
                         s = in.readLine();
                         myPlayer = g.fromJson(s, P.class);
+                        if(!myPlayer.isConnected()){
+                            f.setConnected(true);
+                        }
                         otherP = myPlayer;
                         otherPlayer.setY(otherP.getY());
                         otherPlayer.setHeart(otherP.getNHeart());
@@ -118,24 +122,9 @@ public class Client {
                                 }
                             }
                         }
-                        /*if (CustomFrame.otherBullets.size() > 0) {
-                            boolean bPresent = false;
-                            for (Bullet bullet : CustomFrame.otherBullets) {
-                                if (bullet.getId() == b.getId()) {
-                                    bullet = b;
-                                    bPresent = true;
-                                    break;
-                                }
-                            }
-                            if (bPresent == false) {
-                                CustomFrame.otherBullets.add(b);
-                            }
-                        } else {
-                            CustomFrame.otherBullets.add(b);
-                        }*/
                         try {
                             if (!myPlayer.isConnected()) {
-                                f.setConnected(false);
+                                f.setConnected(true);
                             }
                         }catch (Exception e) {
                             //System.out.println("My player null");
