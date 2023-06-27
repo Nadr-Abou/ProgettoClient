@@ -18,22 +18,18 @@ public class CustomFrame extends JFrame implements Runnable {
     Player rightPlayer;
     boolean Connected = true;
     Date d = new Date();
-    static int windowWidth;
-    static int windowHeight;
     static List<Bullet> bullets = new ArrayList<>();
     static List<Bullet> otherBullets = new ArrayList<>();
 
     public CustomFrame(Player thisPlayer) throws HeadlessException {
         this.addKeyListener(thisPlayer);
         this.getContentPane().setBackground(Color.cyan);
-        windowWidth = getWidth();
-        windowHeight = getHeight();
         bullets.add(new Bullet(-10,-10, 1, "This"));
         bullets.add(new Bullet(-10,-10, 2, "This"));
         bullets.add(new Bullet(-10,-10, 3, "This"));
-        bullets.add(new Bullet(getWidth()+10,getHeight()+20, 1, "Other"));
-        bullets.add(new Bullet(getWidth()+10,getHeight()+20, 2, "Other"));
-        bullets.add(new Bullet(getWidth()+10,getHeight()+20, 3, "Other"));
+        bullets.add(new Bullet(getWidth()+10,getHeight()+10, 1, "Other"));
+        bullets.add(new Bullet(getWidth()+10,getHeight()+10, 2, "Other"));
+        bullets.add(new Bullet(getWidth()+10,getHeight()+10, 3, "Other"));
         /*otherBullets.add(new Bullet(getWidth()+10,0));
         otherBullets.add(new Bullet(getWidth()+10,0));
         otherBullets.add(new Bullet(getWidth()+10,0));*/
@@ -93,6 +89,8 @@ public class CustomFrame extends JFrame implements Runnable {
         }
 
         g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
+
+        //Doppia bufferizzazione JFRAME
     }
 
     private void heartDrawImage(Graphics g, int x) {

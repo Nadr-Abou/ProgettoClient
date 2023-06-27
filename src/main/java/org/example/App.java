@@ -24,7 +24,7 @@ public class App {
         while (f == null) {
             System.out.println("Waiting for another player...");
             try {
-                Thread.sleep(1000);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 System.out.println("Interrupted exception");
             }
