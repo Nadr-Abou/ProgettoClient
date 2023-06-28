@@ -10,6 +10,7 @@ public class Player extends Client implements KeyListener {
     private long lastPressProcessedUP = 0;
     private long lastPressProcessedDown = 0;
     private long lastPressProcessedSpace = 0;
+    private boolean hasPressedEnter = false;
 
     public Player() {
     }
@@ -44,7 +45,6 @@ public class Player extends Client implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.println(y);
 
         switch (e.getKeyCode()) {
             case 38: //tasto freccia su
@@ -79,6 +79,17 @@ public class Player extends Client implements KeyListener {
                     lastPressProcessedSpace = System.currentTimeMillis();
                 }
                 break;
+
+            case 10:
+                System.out.println("enter premuto fuori");
+                if(f.gameEnded && !hasPressedEnter){
+                    System.out.println("enter - dentro");
+                    if(!Client.recived)
+                        Client.sendRestart();
+                    Client.enterPressed = true;
+                }
+                break;
+
         }
     }
 

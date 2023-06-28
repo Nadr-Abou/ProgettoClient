@@ -17,6 +17,9 @@ public class Client {
     static P thisP = null;
     static P otherP = null;
     static Gson g = new Gson();
+    static boolean enterPressed = false;
+    static boolean recived = false;
+
 
     public Client(Player thisPlayer, Player otherPlayer, CustomFrame f) {
         this.thisPlayer = thisPlayer;
@@ -86,21 +89,25 @@ public class Client {
             Bullet b = null;
             try {
                 if ((s = in.readLine()) != null) {
-
+                    System.out.println(s);
                     if (s.equals("This player")) {
                         s = in.readLine();
                         myPlayer = g.fromJson(s, P.class);
                         thisP.setNHeart(myPlayer.getNHeart());
                         thisPlayer.setHeart(thisP.getNHeart());
+                        f.repaint(0,0,1220,85);
                     } else if (s.equals("Other player")) {
                         s = in.readLine();
                         myPlayer = g.fromJson(s, P.class);
                         otherP = myPlayer;
                         otherPlayer.setY(otherP.getY());
                         otherPlayer.setHeart(otherP.getNHeart());
+                        f.repaint(otherPlayer.getX(), otherPlayer.getY(), 100, 180);
+                        f.repaint(otherPlayer.getX(), otherPlayer.getY() - 80, 101, 180);
                     } else if (s.equals("Bullet")) {
                         s = in.readLine();
                         b = g.fromJson(s, Bullet.class);
+                        System.out.println("bullet nadr :" + b.getX() + " e anche " + (f.getWidth() - b.getX()));
                         b.setX(f.getWidth() - b.getX());
                         System.out.println("Other bullet: " + s);
                         if (b.getS().equals("This")) {
@@ -116,17 +123,33 @@ public class Client {
                                 }
                             }
                         }
+                        System.out.println("chiamato una volta spero");
+                        //f.repaint();
                     }
+                    System.out.println(s);
                     try {
                         if (g.fromJson(s, Command.class).command.equals("exit")) {
                             f.setConnected(false);
                             f.repaint();
                             break;
                         }
-                    } catch (Exception e) {
-
-                    }
-                    f.repaint();
+                        else if (g.fromJson(s, Command.class).command.equals("restart")) {
+                            System.out.println("restart");
+                            recived=true;
+                            do {
+                                System.out.println("dentro while : " + enterPressed);
+                                if (enterPressed) {
+                                    enterPressed = false;
+                                    restart(true);
+                                    System.out.println("restart");
+                                    break;
+                                }
+                            } while (true);
+                        } else if (g.fromJson(s, Command.class).command.equals("ready")) {
+                            System.out.println("readyMetodo");
+                            restart(false);
+                        }
+                    } catch (Exception e) {}
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -165,4 +188,34 @@ public class Client {
         out.println("Bullet");
         out.println(g.toJson(b));
     }
+
+
+    public static void sendRestart() {
+        out.println(g.toJson(new Command("restart")));
+        System.out.println("send");
+    }
+
+    public static void restart(boolean recived) {
+        System.out.println("restartMetodo1");
+        thisPlayer.setX(0);
+        thisPlayer.setY(360);
+        thisPlayer.setHeart(3);
+        otherPlayer.setX(1120);
+        otherPlayer.setY(360);
+        otherPlayer.setHeart(3);
+        f.increaseWins = false;
+        f.gameEnded = false;
+        if (recived) {
+            System.out.println("ready");
+            out.println(g.toJson(new Command("ready")));
+        }
+        Client.recived = false;
+        System.out.println("restartMetodo");
+        f.repaint();
+
+    }
 }
+
+/*
+
+ */

@@ -16,10 +16,10 @@ public class CustomFrame extends JFrame implements Runnable {
     private Thread thread;
     Player leftPlayer;
     Player rightPlayer;
-
     boolean Connected = true;
-
     boolean gameEnded = false;
+    boolean enterPressed = false;
+    boolean increaseWins = false;
     private int leftWin = 0;
 
     private int rightWin = 0;
@@ -73,8 +73,9 @@ public class CustomFrame extends JFrame implements Runnable {
         }
 
         if(rightPlayer.getHeart() == 0 || leftPlayer.getHeart()==0){
-            //blockDrawImage(g,"GameEnded.png");
-            //return;
+            blockDrawImage(g,"GameEnded.png");
+            gameEnded=true;
+            return;
         }
 
 
@@ -208,7 +209,7 @@ public class CustomFrame extends JFrame implements Runnable {
                     } else if (b.getS().equals("Other")) {
                         System.out.println("Other x: "+b.getX());
                         b.setX(b.getX() - 80);
-                        repaint(b.getX() - 80, b.getY(), 40, 40);
+                        repaint(b.getX() + 80, b.getY(), 40, 40);
                         repaint(b.getX(), b.getY(), 40, 40);
                     }
                 }
@@ -224,7 +225,7 @@ public class CustomFrame extends JFrame implements Runnable {
                     }
                 }
                 try{
-                    if( b.getX() >= rightPlayer.getX() && ((b.getY() >= rightPlayer.getY()) && (b.getY() <= (rightPlayer.getY()+100)) )){
+                    if( !gameEnded && b.getX() >= rightPlayer.getX() && ((b.getY() >= rightPlayer.getY()) && (b.getY() <= (rightPlayer.getY()+100)) )){
                         int decHeart = rightPlayer.getHeart() - 1;
                         rightPlayer.setHeart( decHeart );
                         Client.otherPlayer.setHeart(decHeart);
@@ -239,23 +240,21 @@ public class CustomFrame extends JFrame implements Runnable {
                 }
             }
             try{
-                if(rightPlayer.getHeart() == 0){leftWin++;}
-                if (leftPlayer.getHeart() == 0){rightWin++;}
+                if(rightPlayer.getHeart() == 0){
+                    if(!increaseWins){
+                        leftWin++;
+                        increaseWins=true;
+                    }
+                }
+                if (leftPlayer.getHeart() == 0){
+                    if(!increaseWins){
+                        rightWin++;
+                        increaseWins=true;
+                    }
+                }
             }catch (Exception e){
 
             }
-            /*for(Bullet b : otherBullets){
-                if(b.getX() >= 0 && b.getX() < 1280){
-                    b.setX( b.getX() + 80);
-                    repaint(b.getX()-80,b.getY(),40, 40);
-                    repaint(b.getX(),b.getY(),40, 40);
-                }
-                if(b.getX() > 1220){
-                    b.setX(-10);
-                    b.setY(-10);
-                    otherBullets.remove(b);
-                }
-            }*/
             try{
                 thread.sleep(750);
             }catch (Exception e){}
