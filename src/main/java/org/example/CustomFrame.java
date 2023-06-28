@@ -155,6 +155,7 @@ public class CustomFrame extends JFrame implements Runnable {
             if(b.getX() < 0 && b.getS().equals("This")){
                 b.setY(y+25);
                 Client.sendBulletData(b);
+                System.out.println(b.getX());
                 b.setX(x+140);
                 break;
             }
@@ -164,7 +165,7 @@ public class CustomFrame extends JFrame implements Runnable {
     public void fireOpposite(int x, int y) {
         for(Bullet b : bullets){
             if(b.getX() > getWidth() && b.getS().equals("Other")){
-                b.setX(x-140);
+                b.setX(x-160);
                 b.setY(y);
                 break;
             }
@@ -204,6 +205,13 @@ public class CustomFrame extends JFrame implements Runnable {
                         Client.otherPlayer.setHeart(decHeart);
                         Client.sendPlayerData();
                         if(rightPlayer.getHeart() == 0){}
+                        repaint();
+                    } else if( b.getX() <= leftPlayer.getX() && ((b.getY() >= leftPlayer.getY()) && (b.getY() <= (leftPlayer.getY()+100)) )){
+                        int decHeart = rightPlayer.getHeart() - 1;
+                        rightPlayer.setHeart( decHeart );
+                        Client.otherPlayer.setHeart(decHeart);
+                        Client.sendPlayerData();
+                        if(leftPlayer.getHeart() == 0){}
                         repaint();
                     }
                 }catch (Exception e){

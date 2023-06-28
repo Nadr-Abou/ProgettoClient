@@ -89,25 +89,25 @@ public class Client {
                         break;
                     } else if (s.equals("This player")) {
                         s = in.readLine();
-                        myPlayer = g.fromJson(s, P.class);
-                        if(!myPlayer.isConnected()){
+                        thisP = g.fromJson(s, P.class);
+                        if(!thisP.isConnected()){
                             f.setConnected(true);
                         }
-                        thisP.setNHeart(myPlayer.getNHeart());
+                        thisP.setNHeart(thisP.getNHeart());
                         thisPlayer.setHeart(thisP.getNHeart());
                     } else if (s.equals("Other player")) {
                         s = in.readLine();
-                        myPlayer = g.fromJson(s, P.class);
-                        if(!myPlayer.isConnected()){
+                        otherP = g.fromJson(s, P.class);
+                        if(!otherP.isConnected()){
                             f.setConnected(true);
                         }
-                        otherP = myPlayer;
                         otherPlayer.setY(otherP.getY());
                         otherPlayer.setHeart(otherP.getNHeart());
                     } else if (s.equals("Bullet")) {
                         s = in.readLine();
                         b = g.fromJson(s, Bullet.class);
                         b.setX(f.getWidth() - b.getX());
+                        System.out.println("x: "+b.getX());
                         System.out.println("Other bullet: "+s);
                         if (b.getS().equals("This")) {
                             for (Bullet bullet : CustomFrame.bullets) {
