@@ -16,11 +16,17 @@ public class CustomFrame extends JFrame implements Runnable {
     private Thread thread;
     Player leftPlayer;
     Player rightPlayer;
+
     boolean Connected = true;
+
+    boolean gameEnded = false;
+    private int leftWin = 0;
+
+    private int rightWin = 0;
+    Font f = new Font("serif", Font.PLAIN, 50);
     Date d = new Date();
     static List<Bullet> bullets = new ArrayList<>();
     static List<Bullet> otherBullets = new ArrayList<>();
-
     public CustomFrame(Player thisPlayer) throws HeadlessException {
         this.addKeyListener(thisPlayer);
         this.getContentPane().setBackground(Color.cyan);
@@ -45,13 +51,33 @@ public class CustomFrame extends JFrame implements Runnable {
         this.rightPlayer = rightPlayer;
     }
 
+    public boolean isConnected() {
+        return Connected;
+    }
+
+    public void setConnected(boolean connected) {
+        Connected = connected;
+    }
+
     public void paint(Graphics g) {
         super.paint(g);
 
         if (leftPlayer == null || rightPlayer == null) {
-            blockDrawImage(g);
+            blockDrawImage(g,"initialIMG.png");
             return;
         }
+
+        if(!Connected){
+            blockDrawImage(g,"GameDisconnected.png");
+            return;
+        }
+
+        if(rightPlayer.getHeart() == 0 || leftPlayer.getHeart()==0){
+            //blockDrawImage(g,"GameEnded.png");
+            //return;
+        }
+
+
 
         int w = this.getWidth();
         int h = this.getHeight();
@@ -64,6 +90,10 @@ public class CustomFrame extends JFrame implements Runnable {
         }
 
         g.setColor(Color.yellow);
+
+        g.setFont(f);
+        g.drawString(leftWin + " - " + rightWin,580,75);
+
         g.drawLine(0, 87, this.getWidth(), 87);
         g.drawLine(0, 88, this.getWidth(), 88);
 
@@ -76,9 +106,9 @@ public class CustomFrame extends JFrame implements Runnable {
 
     }
 
-    private void blockDrawImage(Graphics g) {
+    private void blockDrawImage(Graphics g, String urlImg) {
         ClassLoader cl = this.getClass().getClassLoader();
-        InputStream url = cl.getResourceAsStream("initialIMG.png");
+        InputStream url = cl.getResourceAsStream(urlImg);
         BufferedImage img = null;
 
         try {
@@ -207,6 +237,12 @@ public class CustomFrame extends JFrame implements Runnable {
                 }catch (Exception e){
                     System.out.println("No right player at the moment...");
                 }
+            }
+            try{
+                if(rightPlayer.getHeart() == 0){leftWin++;}
+                if (leftPlayer.getHeart() == 0){rightWin++;}
+            }catch (Exception e){
+
             }
             /*for(Bullet b : otherBullets){
                 if(b.getX() >= 0 && b.getX() < 1280){

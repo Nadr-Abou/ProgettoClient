@@ -25,7 +25,8 @@ public class Client {
         clientMain();
     }
 
-    public Client() {}
+    public Client() {
+    }
 
     static void clientMain() {
         String hostName = "127.0.0.1";
@@ -85,22 +86,15 @@ public class Client {
             Bullet b = null;
             try {
                 if ((s = in.readLine()) != null) {
-                    if (s.equals("exit")) {
-                        break;
-                    } else if (s.equals("This player")) {
+
+                    if (s.equals("This player")) {
                         s = in.readLine();
                         myPlayer = g.fromJson(s, P.class);
-                        if(!myPlayer.isConnected()){
-                            f.setConnected(true);
-                        }
                         thisP.setNHeart(myPlayer.getNHeart());
                         thisPlayer.setHeart(thisP.getNHeart());
                     } else if (s.equals("Other player")) {
                         s = in.readLine();
                         myPlayer = g.fromJson(s, P.class);
-                        if(!myPlayer.isConnected()){
-                            f.setConnected(true);
-                        }
                         otherP = myPlayer;
                         otherPlayer.setY(otherP.getY());
                         otherPlayer.setHeart(otherP.getNHeart());
@@ -108,7 +102,7 @@ public class Client {
                         s = in.readLine();
                         b = g.fromJson(s, Bullet.class);
                         b.setX(f.getWidth() - b.getX());
-                        System.out.println("Other bullet: "+s);
+                        System.out.println("Other bullet: " + s);
                         if (b.getS().equals("This")) {
                             for (Bullet bullet : CustomFrame.bullets) {
                                 if (bullet.getS().equals("Other")) {
@@ -122,28 +116,15 @@ public class Client {
                                 }
                             }
                         }
-                        /*if (CustomFrame.otherBullets.size() > 0) {
-                            boolean bPresent = false;
-                            for (Bullet bullet : CustomFrame.otherBullets) {
-                                if (bullet.getId() == b.getId()) {
-                                    bullet = b;
-                                    bPresent = true;
-                                    break;
-                                }
-                            }
-                            if (bPresent == false) {
-                                CustomFrame.otherBullets.add(b);
-                            }
-                        } else {
-                            CustomFrame.otherBullets.add(b);
-                        }*/
-                        try {
-                            if (!myPlayer.isConnected()) {
-                                f.setConnected(true);
-                            }
-                        }catch (Exception e) {
-                            //System.out.println("My player null");
+                    }
+                    try {
+                        if (g.fromJson(s, Command.class).command.equals("exit")) {
+                            f.setConnected(false);
+                            f.repaint();
+                            break;
                         }
+                    } catch (Exception e) {
+
                     }
                     f.repaint();
                 }
@@ -161,8 +142,8 @@ public class Client {
         otherPlayer.setY(otherP.getY());
         otherPlayer.setX(otherP.getX());
         otherPlayer.setHeart(otherP.getNHeart());
-        System.out.println("This player: {x: "+thisPlayer.getX()+" y: "+thisPlayer.getY()+"}");
-        System.out.println("Other player: {x: "+otherPlayer.getX()+" y: "+otherPlayer.getY()+"}");
+        System.out.println("This player: {x: " + thisPlayer.getX() + " y: " + thisPlayer.getY() + "}");
+        System.out.println("Other player: {x: " + otherPlayer.getX() + " y: " + otherPlayer.getY() + "}");
     }
 
     public static void sendPlayerData() {
@@ -172,10 +153,10 @@ public class Client {
         otherP.setX(otherPlayer.getX());
         otherP.setY(otherPlayer.getY());
         otherP.setNHeart(otherPlayer.getHeart());
-        System.out.println("Method: sendPlayerData() to\n"+"This player: "+g.toJson(thisP));
+        System.out.println("Method: sendPlayerData() to\n" + "This player: " + g.toJson(thisP));
         out.println("This player");
         out.println(g.toJson(thisP));
-        System.out.println("Method: sendPlayerData() to\n"+"Other player: "+g.toJson(otherP));
+        System.out.println("Method: sendPlayerData() to\n" + "Other player: " + g.toJson(otherP));
         out.println("Other player");
         out.println(g.toJson(otherP));
     }
