@@ -35,7 +35,7 @@ public class Client {
         String hostName = "127.0.0.1";
         int portNumber = 1234;
         Socket clientSocket = null;
-
+        //socket
         try {
             clientSocket = new Socket(hostName, portNumber);
         } catch (IOException e) {
@@ -48,7 +48,7 @@ public class Client {
         } catch (Exception e) {
             System.out.println("YOU MUST CONNECT THE SERVER!!");
         }
-
+        //input
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (Exception e) {
@@ -87,9 +87,11 @@ public class Client {
             String s;
             P myPlayer = null;
             Bullet b = null;
+            //legge in input
             try {
                 if ((s = in.readLine()) != null) {
                     System.out.println(s);
+                    //lettura comando e spedizione
                     if (s.equals("This player")) {
                         s = in.readLine();
                         myPlayer = g.fromJson(s, P.class);
@@ -124,7 +126,6 @@ public class Client {
                             }
                         }
                         System.out.println("chiamato una volta spero");
-                        //f.repaint();
                     }
                     System.out.println(s);
                     try {
